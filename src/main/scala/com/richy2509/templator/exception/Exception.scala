@@ -5,5 +5,5 @@ package com.richy2509.templator.exception
   */
 object Exception {
   case class InvalidConfigException(msg: String) extends Exception(msg)
-  case class NoArgsException() extends Exception("Can't read args")
+  case class NoArgsException() extends Exception("No args ")
 }

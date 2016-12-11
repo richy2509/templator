@@ -2,6 +2,7 @@ package com.richy2509.templator.config
 
 import java.io.FileInputStream
 
+import com.typesafe.scalalogging.Logger
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
 
@@ -23,6 +24,7 @@ object YamlConfigBuilder {
     }
 
     def get(): AnyRef = {
+      Logger.apply(YamlConfig.getClass.getSimpleName).debug(s"Retrieve yaml from : $path")
       new Yaml(new Constructor(className)).load(new FileInputStream(path))
     }
 

@@ -4,6 +4,7 @@ import java.io.{File, StringWriter}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
+import com.typesafe.scalalogging.Logger
 import freemarker.template.{Configuration, Template}
 
 /**
@@ -40,6 +41,7 @@ object FreemarkerBuilder {
     }
 
     def saveTo(path: String): FreemarkerTemplate = {
+      Logger.apply(FreemarkerTemplate.getClass.getSimpleName).debug(s"Output saved to $path")
       Files.write(Paths.get(path), out.toString.getBytes(StandardCharsets.UTF_8))
       this
     }

@@ -12,11 +12,9 @@ import com.typesafe.scalalogging.Logger
   */
 object Main extends App {
 
-  val logger = Logger("name")
-
   override def main(args: Array[String]): Unit = {
 
-    println("Templator initialization")
+    Logger.apply(Main.getClass.getSimpleName).debug("Templator initialization")
 
     val config = YamlConfigBuilder
       .build

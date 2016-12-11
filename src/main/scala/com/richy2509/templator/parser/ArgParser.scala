@@ -1,6 +1,7 @@
 package com.richy2509.templator.parser
 
-import com.richy2509.templator.exception.Exception.{InvalidConfigException, NoArgsException}
+import com.richy2509.templator.exception.Exception.NoArgsException
+import com.typesafe.scalalogging.Logger
 
 /**
   * Created by richardkoehl on 11/12/2016.
@@ -27,7 +28,8 @@ object ArgParser {
 
     def getConfig: String = {
       val parsedArgs = toMap
-      if (parsedArgs == null) {
+      Logger.apply(ArgParser.getClass.getSimpleName).debug(s"retrieve arg config from $parsedArgs")
+      if (parsedArgs == null || parsedArgs.isEmpty) {
         throw NoArgsException()
       }
       parsedArgs("config")
