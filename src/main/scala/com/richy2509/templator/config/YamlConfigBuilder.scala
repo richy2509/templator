@@ -1,14 +1,11 @@
 package com.richy2509.templator.config
 
 import java.io.FileInputStream
-import java.util
 
 import com.richy2509.templator.utils.StringUtils
 import com.typesafe.scalalogging.Logger
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
-
-import scala.collection.mutable
 
 /**
   * Created by richardkoehl on 10/12/2016.
@@ -23,25 +20,13 @@ object YamlConfigBuilder {
 
     val logger: Logger = Logger.apply(YamlConfig.getClass)
 
-    def complete(): Unit = {
-
-      logger.debug(s"Complete config value $value")
-
-      }
-
-
-      def from(p: String): YamlConfig = {
+    def from(p: String): YamlConfig = {
       path = p
       this
     }
 
     def withClass(cName: String): YamlConfig = {
       className = cName
-      this
-    }
-
-    def search(): YamlConfig = {
-      value = get()
       this
     }
 

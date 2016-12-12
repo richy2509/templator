@@ -14,13 +14,6 @@ object Main extends App {
 
   Logger.apply(Main.getClass.getSimpleName).debug("Templator initialization")
 
-
-  val tmpConfig = YamlConfigBuilder
-    .build
-    .from(ArgParser.build(args).getConfig)
-    .search()
-    .complete()
-
   val templateConfig = YamlConfigBuilder
     .build
     .from(ArgParser.build(args).getConfig)
