@@ -4,6 +4,7 @@ import java.io._
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
+import com.richy2509.templator.data.{TemplatorEngineConfig, TemplatorFreemarkerConfig}
 import com.richy2509.templator.exception.Exception.MyTemplateExceptionHandler
 import com.richy2509.templator.utils.StringUtils
 import com.typesafe.scalalogging.Logger
@@ -89,10 +90,13 @@ object FreemarkerBuilder {
 
   }
 
-  def config: FreemarkerConfig = {
+  def getConfig(config: TemplatorFreemarkerConfig): FreemarkerConfig = {
+
     val configuration = new Configuration(Configuration.VERSION_2_3_25)
-    configuration.setTemplateExceptionHandler(new MyTemplateExceptionHandler)
-    configuration.setLogTemplateExceptions(false)
+    configuration.setLogTemplateExceptions(config.enableLogging)
+    if (config.enableRewrite){
+      configuration.setTemplateExceptionHandler(new MyTemplateExceptionHandler)
+    }
     FreemarkerConfig(configuration)
   }
 
