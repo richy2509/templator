@@ -12,41 +12,34 @@ import com.typesafe.scalalogging.Logger
   */
 object Main extends App {
 
-  override def main(args: Array[String]): Unit = {
+  Logger.apply(Main.getClass.getSimpleName).debug("Templator initialization")
 
-    Logger.apply(Main.getClass.getSimpleName).debug("Templator initialization")
+  val config = YamlConfigBuilder
+    .build
+    .from(ArgParser.build(args).getConfig)
+    .withClass("com.richy2509.templator.data.TemplatorConfig")
+    .get()
+    .asInstanceOf[TemplatorConfig]
 
-    val config = YamlConfigBuilder
-      .build
-      .from(ArgParser.build(args).getConfig)
-      .withClass("com.richy2509.templator.data.TemplatorConfig")
-      .get()
-      .asInstanceOf[TemplatorConfig]
+  if (config.data != null && !config.data.isEmpty) {
 
-    //ConfigFields.values.foreach(ConfigFields.validateField(config, _))
-
-    if (config.data != null && !config.data.isEmpty) {
-
-      val it = config.data.iterator()
-      while(it.hasNext) {
-        val childrenConfig = it.next()
-        FreemarkerBuilder
-          .config
-          .withDirectory(childrenConfig.getTemplateDir)
-          .getTemplate(childrenConfig.modelfile)
-          .process(childrenConfig.params)
-          .saveTo(childrenConfig.outputfile)
-      }
-    } else {
+    val it = config.data.iterator()
+    while (it.hasNext) {
+      val childrenConfig = it.next()
       FreemarkerBuilder
         .config
-        .withDirectory(config.getTemplateDir)
-        .getTemplate(config.modelfile)
-        .process(config.params)
-        .saveTo(config.outputfile)
+        .withDirectory(childrenConfig.getTemplateDir)
+        .getTemplate(childrenConfig.modelfile)
+        .process(childrenConfig.params)
+        .saveTo(childrenConfig.outputfile)
     }
-
-
+  } else {
+    FreemarkerBuilder
+      .config
+      .withDirectory(config.getTemplateDir)
+      .getTemplate(config.modelfile)
+      .process(config.params)
+      .saveTo(config.outputfile)
   }
 
 }

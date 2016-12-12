@@ -1,10 +1,13 @@
 package com.richy2509.templator.model
 
-import java.io.{File, StringWriter}
+import java.io._
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
+import com.richy2509.templator.exception.Exception.MyTemplateExceptionHandler
+import com.richy2509.templator.utils.StringUtils
 import com.typesafe.scalalogging.Logger
+import freemarker.cache.TemplateLoader
 import freemarker.template.{Configuration, Template}
 
 /**
@@ -12,44 +15,87 @@ import freemarker.template.{Configuration, Template}
   */
 object FreemarkerBuilder {
 
-  case class FreemarkerConfig(version: freemarker.template.Version) {
-
-    var configuration = new Configuration(version)
+  case class FreemarkerConfig(configuration: Configuration) {
 
     def withDirectory(path: String): FreemarkerConfig = {
-      val dirPath = Paths.get(path)
-      if (!Files.exists(dirPath)) {
-        Files.createDirectory(dirPath)
+
+      if (StringUtils.isBlank(path)) {
+        configuration.setTemplateLoader(new TemplateAbsolutePathLoader)
+      } else {
+        val dirPath = Paths.get(path)
+        if (!Files.exists(dirPath)) {
+          Files.createDirectory(dirPath)
+        }
+        configuration.setDirectoryForTemplateLoading(new File(path))
       }
-      configuration.setDirectoryForTemplateLoading(new File(path))
       this
     }
 
     def getTemplate(path: String): FreemarkerTemplate = {
-      FreemarkerTemplate(configuration.getTemplate(path))
+      FreemarkerTemplate(configuration, path)
     }
 
   }
 
-  case class FreemarkerTemplate(template: Template) {
+  case class FreemarkerTemplate(configuration: Configuration, path: String) {
 
     var out = new StringWriter()
 
+    private def getTemplate: Template = {
+      configuration.getTemplate(path)
+    }
+
     def process(dataModel: Any): FreemarkerTemplate = {
-      template.process(dataModel, out)
+      getTemplate.process(dataModel, out)
       this
     }
 
-    def saveTo(path: String): FreemarkerTemplate = {
-      Logger.apply(FreemarkerTemplate.getClass.getSimpleName).debug(s"Output saved to $path")
-      Files.write(Paths.get(path), out.toString.getBytes(StandardCharsets.UTF_8))
+    def saveTo(dirPath: String): FreemarkerTemplate = {
+      Logger.apply(FreemarkerTemplate.getClass.getSimpleName).debug(s"Output saved to $dirPath")
+      val path = Paths.get(dirPath)
+      if (!Files.exists(path)) {
+        Files.createDirectories(path.getParent)
+      }
+      Files.write(path, out.toString.getBytes(StandardCharsets.UTF_8))
       this
+    }
+
+  }
+
+  class TemplateAbsolutePathLoader extends TemplateLoader {
+
+    override def getLastModified(templateSource: scala.Any): Long = {
+      templateSource.asInstanceOf[File].lastModified()
+    }
+
+    override def findTemplateSource(name: String): AnyRef = {
+      val source = new File(name)
+      if (source.isFile) {
+        return source
+      }
+      null
+    }
+
+    override def getReader(templateSource: scala.Any, encoding: String): Reader = {
+      if (!templateSource.isInstanceOf[File]) {
+        throw new IllegalArgumentException("templateSource is a: " + templateSource.getClass.getName)
+      }
+      new InputStreamReader(new FileInputStream(templateSource.asInstanceOf[File]), encoding)
+    }
+
+    override def closeTemplateSource(templateSource: scala.Any): Unit = {
+      // do nothing
     }
 
   }
 
   def config: FreemarkerConfig = {
-    FreemarkerConfig(Configuration.VERSION_2_3_25)
+    val configuration = new Configuration(Configuration.VERSION_2_3_25)
+    configuration.setTemplateExceptionHandler(new MyTemplateExceptionHandler)
+    configuration.setLogTemplateExceptions(false)
+    FreemarkerConfig(configuration)
   }
 
 }
+
+
