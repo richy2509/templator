@@ -15,12 +15,10 @@ object ConfigFields extends Enumeration {
 
   def validateField(gc: TemplatorConfig, field: TemplatorFields): Unit = {
     field.toString match {
-      case "templateDir" => validationFilepath.apply(gc.templateDir)
+      //case "templateDir" => validationFilepath.apply(gc.getTemplateDir)
       case "modelfile" => fieldCorrect.apply(gc.modelfile)
       case "outputfile" => fieldCorrect.apply(gc.outputfile)
-      case "params" => if (params == null) {
-        throw InvalidConfigException(field.toString)
-      }
+      //case "params" => if (params == null) { throw InvalidConfigException(field.toString) }
     }
   }
 

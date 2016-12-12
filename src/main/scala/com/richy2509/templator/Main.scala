@@ -23,17 +23,29 @@ object Main extends App {
       .get()
       .asInstanceOf[TemplatorConfig]
 
-    ConfigFields.values
-      .foreach(ConfigFields.validateField(config, _))
+    //ConfigFields.values.foreach(ConfigFields.validateField(config, _))
 
-    val data = config.params
+    if (config.data != null && !config.data.isEmpty) {
 
-    FreemarkerBuilder
-      .config
-      .withDirectory(config.templateDir)
-      .getTemplate(config.modelfile)
-      .process(data)
-      .saveTo(config.outputfile)
+      val it = config.data.iterator()
+      while(it.hasNext) {
+        val childrenConfig = it.next()
+        FreemarkerBuilder
+          .config
+          .withDirectory(childrenConfig.getTemplateDir)
+          .getTemplate(childrenConfig.modelfile)
+          .process(childrenConfig.params)
+          .saveTo(childrenConfig.outputfile)
+      }
+    } else {
+      FreemarkerBuilder
+        .config
+        .withDirectory(config.getTemplateDir)
+        .getTemplate(config.modelfile)
+        .process(config.params)
+        .saveTo(config.outputfile)
+    }
+
 
   }
 
