@@ -3,8 +3,8 @@ package com.richy2509.templator
 import com.richy2509.templator.config.YamlConfigBuilder
 import com.richy2509.templator.data.TemplatorTemplateConfig
 import com.richy2509.templator.model.FreemarkerBuilder
+import com.richy2509.templator.model.FreemarkerBuilder.{FreemarkerConfig, FreemarkerTemplate}
 import com.richy2509.templator.parser.ArgParser
-import com.richy2509.templator.validation.ConfigFields
 import com.typesafe.scalalogging.Logger
 
 /**
@@ -13,6 +13,13 @@ import com.typesafe.scalalogging.Logger
 object Main extends App {
 
   Logger.apply(Main.getClass.getSimpleName).debug("Templator initialization")
+
+
+  val tmpConfig = YamlConfigBuilder
+    .build
+    .from(ArgParser.build(args).getConfig)
+    .search()
+    .complete()
 
   val templateConfig = YamlConfigBuilder
     .build
@@ -26,19 +33,18 @@ object Main extends App {
   if (templateConfig.data != null && !templateConfig.data.isEmpty) {
     val it = templateConfig.data.iterator()
     while (it.hasNext) {
-      val childrenConfig = it.next()
-      freemarkerConfig
-        .withDirectory(childrenConfig.getTemplateDir)
-        .getTemplate(childrenConfig.modelfile)
-        .process(childrenConfig.params)
-        .saveTo(childrenConfig.outputfile)
+      process(freemarkerConfig, it.next())
     }
   } else {
+    process(freemarkerConfig, templateConfig)
+  }
+
+  def process(freemarkerConfig: FreemarkerConfig, template: TemplatorTemplateConfig): FreemarkerTemplate = {
     freemarkerConfig
-      .withDirectory(templateConfig.getTemplateDir)
-      .getTemplate(templateConfig.modelfile)
-      .process(templateConfig.params)
-      .saveTo(templateConfig.outputfile)
+      .withDirectory(template.getTemplateDir)
+      .getTemplate(template.modelfile)
+      .process(template.params)
+      .saveTo(template.outputfile)
   }
 
 }

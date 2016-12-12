@@ -4,7 +4,7 @@ import java.io._
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
-import com.richy2509.templator.data.{TemplatorEngineConfig, TemplatorFreemarkerConfig}
+import com.richy2509.templator.data.TemplatorFreemarkerConfig
 import com.richy2509.templator.exception.Exception.MyTemplateExceptionHandler
 import com.richy2509.templator.utils.StringUtils
 import com.typesafe.scalalogging.Logger
@@ -17,6 +17,8 @@ import freemarker.template.{Configuration, Template}
 object FreemarkerBuilder {
 
   case class FreemarkerConfig(configuration: Configuration) {
+
+    val logger: Logger = Logger.apply(FreemarkerConfig.getClass)
 
     def withDirectory(path: String): FreemarkerConfig = {
 
@@ -40,6 +42,8 @@ object FreemarkerBuilder {
 
   case class FreemarkerTemplate(configuration: Configuration, path: String) {
 
+    val logger: Logger = Logger.apply(FreemarkerTemplate.getClass.getSimpleName)
+
     var out = new StringWriter()
 
     private def getTemplate: Template = {
@@ -52,7 +56,7 @@ object FreemarkerBuilder {
     }
 
     def saveTo(dirPath: String): FreemarkerTemplate = {
-      Logger.apply(FreemarkerTemplate.getClass.getSimpleName).debug(s"Output saved to $dirPath")
+      logger.debug(s"Output saved to $dirPath")
       val path = Paths.get(dirPath)
       if (!Files.exists(path)) {
         Files.createDirectories(path.getParent)
@@ -94,7 +98,7 @@ object FreemarkerBuilder {
 
     val configuration = new Configuration(Configuration.VERSION_2_3_25)
     configuration.setLogTemplateExceptions(config.enableLogging)
-    if (config.enableRewrite){
+    if (config.enableRewrite) {
       configuration.setTemplateExceptionHandler(new MyTemplateExceptionHandler)
     }
     FreemarkerConfig(configuration)
