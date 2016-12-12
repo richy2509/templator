@@ -21,7 +21,9 @@ object Main extends App {
     .get()
     .asInstanceOf[TemplatorTemplateConfig]
 
-  val freemarkerConfig = FreemarkerBuilder.getConfig(templateConfig.config.freemarker)
+  val freemarkerConfig = FreemarkerBuilder
+    .getConfig(templateConfig.config.freemarker)
+    .withGlobalConfig(templateConfig.params)
 
   if (templateConfig.data != null && !templateConfig.data.isEmpty) {
     val it = templateConfig.data.iterator()

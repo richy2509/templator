@@ -16,9 +16,14 @@ import freemarker.template.{Configuration, Template}
   */
 object FreemarkerBuilder {
 
-  case class FreemarkerConfig(configuration: Configuration) {
+  case class FreemarkerConfig(configuration: Configuration, var globalParams: Object = null) {
 
     val logger: Logger = Logger.apply(FreemarkerConfig.getClass)
+
+    def withGlobalConfig(params: Object): FreemarkerConfig = {
+      globalParams = params
+      this
+    }
 
     def withDirectory(path: String): FreemarkerConfig = {
 
@@ -35,12 +40,12 @@ object FreemarkerBuilder {
     }
 
     def getTemplate(path: String): FreemarkerTemplate = {
-      FreemarkerTemplate(configuration, path)
+      FreemarkerTemplate(configuration, globalParams, path)
     }
 
   }
 
-  case class FreemarkerTemplate(configuration: Configuration, path: String) {
+  case class FreemarkerTemplate(configuration: Configuration, globalParams: Object, path: String) {
 
     val logger: Logger = Logger.apply(FreemarkerTemplate.getClass.getSimpleName)
 
@@ -52,6 +57,7 @@ object FreemarkerBuilder {
 
     def process(dataModel: Any): FreemarkerTemplate = {
       getTemplate.process(dataModel, out)
+      getTemplate.process(globalParams, out)
       this
     }
 
@@ -69,12 +75,17 @@ object FreemarkerBuilder {
 
   class TemplateAbsolutePathLoader extends TemplateLoader {
 
+    val logger: Logger = Logger.apply("TemplateAbsolutePathLoader")
+
     override def getLastModified(templateSource: scala.Any): Long = {
       templateSource.asInstanceOf[File].lastModified()
     }
 
     override def findTemplateSource(name: String): AnyRef = {
       val source = new File(name)
+
+      logger.debug(s"Finding template source from path $name")
+
       if (source.isFile) {
         return source
       }
