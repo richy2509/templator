@@ -3,6 +3,7 @@ package com.richy2509.templator.model
 import java.io._
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
+import java.util
 
 import com.richy2509.templator.data.TemplatorFreemarkerConfig
 import com.richy2509.templator.exception.Exception.MyTemplateExceptionHandler
@@ -21,7 +22,20 @@ object FreemarkerBuilder {
     val logger: Logger = Logger.apply(FreemarkerConfig.getClass)
 
     def withGlobalConfig(params: Object): FreemarkerConfig = {
-      globalParams = params
+      val map = params.asInstanceOf[util.HashMap]
+
+      for (entry <- map.entrySet()) {
+        entry.
+
+        // now work with key and value...
+      }
+
+      val it = map.keySet().iterator()
+      while(it.hasNext){
+        val key = it.next()
+        configuration.setSharedVariable(key, null)
+      }
+
       this
     }
 
@@ -57,7 +71,6 @@ object FreemarkerBuilder {
 
     def process(dataModel: Any): FreemarkerTemplate = {
       getTemplate.process(dataModel, out)
-      getTemplate.process(globalParams, out)
       this
     }
 
