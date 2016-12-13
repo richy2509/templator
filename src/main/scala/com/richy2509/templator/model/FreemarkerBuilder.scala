@@ -57,7 +57,6 @@ object FreemarkerBuilder {
 
     def process(dataModel: Any): FreemarkerTemplate = {
       getTemplate.process(dataModel, out)
-      getTemplate.process(globalParams, out)
       this
     }
 
