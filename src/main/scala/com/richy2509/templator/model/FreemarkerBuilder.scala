@@ -24,17 +24,7 @@ object FreemarkerBuilder {
     def withGlobalConfig(params: Object): FreemarkerConfig = {
       val map = params.asInstanceOf[util.HashMap]
 
-      for (entry <- map.entrySet()) {
-        entry.
-
-        // now work with key and value...
-      }
-
-      val it = map.keySet().iterator()
-      while(it.hasNext){
-        val key = it.next()
-        configuration.setSharedVariable(key, null)
-      }
+      //TODO
 
       this
     }
