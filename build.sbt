@@ -16,3 +16,7 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
 
 // https://mvnrepository.com/artifact/org.freemarker/freemarker
 libraryDependencies += "org.freemarker" % "freemarker" % "2.3.25-incubating"
+
+resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+
+libraryDependencies += "com.typesafe.play" % "play-json_2.12" % "2.6.0-M1"
