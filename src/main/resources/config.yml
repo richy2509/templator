@@ -8,5 +8,5 @@ params:
     name: "richy"
   projectName: "templator"
 
-modelfile: "/Users/richardkoehl/workspace/templator-model/model/model.ftl"
-outputfile: "/Users/richardkoehl/workspace/templator-model/out/second.ftl"
+modelfile: "/data/model/model.ftl"
+outputfile: "/data/out/out.html"
