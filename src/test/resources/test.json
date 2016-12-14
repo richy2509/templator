@@ -1,0 +1,16 @@
+{
+  "config": {
+    "freemarker": {
+      "enableRewrite": true
+    }
+  },
+  "params": {
+    "commiter": "richy"
+  },
+  "data": [
+    {
+      "modelfile": "",
+      "outputfile": ""
+    }
+  ]
+}
